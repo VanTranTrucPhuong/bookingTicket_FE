@@ -269,9 +269,43 @@
         /* height: 350px; */
         width: 250px;
         height: 350px;
+        -webkit-transition: 0.4s ease;
+        -moz-transition: 0.4s ease;
+        transition: 1s ease;
     }
     
-    .movie__overlay {
+    .movie__item:before {
+        content: '';
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: -moz-linear-gradient(90deg, #ff55a5 0%, #ff5860 100%);
+        background-image: -webkit-linear-gradient(to bottom, #fbbd61, #ec7532);
+        background-image: -ms-linear-gradient(to bottom, #fbbd61, #ec7532);
+        background-image: linear-gradient(to bottom, #fbbd61, #ec7532);
+        z-index: 1;
+        opacity: 0;
+        -webkit-transition: 0.4s ease;
+        -moz-transition: 0.4s ease;
+        transition: 0.4s ease;
+    }
+    
+    .movie__item:hover {
+        -webkit-box-shadow: 0 0 20px 0 rgba(245, 155, 53, 0.5);
+        box-shadow: 0 0 20px 0 rgba(245, 155, 53, 0.5);
+    }
+    
+    .movie__item:hover img {
+        transform: scale(1.25);
+    }
+    
+    .movie__item:hover:before {
+        opacity: 0.65;
+    }
+    /* .movie__overlay {
         position: absolute;
         top: 0;
         left: -400%;
@@ -280,11 +314,10 @@
         height: 100%;
         background: linear-gradient(to bottom, #fbbd61, #ec7532);
         transition: all 0.5s;
-    }
-    
-    .movie__item:hover .movie__overlay {
+    } */
+    /* .movie__item:hover .movie__overlay {
         left: -100%;
-    }
+    } */
     
     .movie__detail {
         position: absolute;
@@ -296,6 +329,7 @@
     }
     
     .movie__item:hover .movie__detail {
+        z-index: 1000;
         opacity: 1;
         transform: translateY(-50%) scale(1);
     }
@@ -721,6 +755,12 @@
     
     .showtime__movie {
         border-bottom: 1px solid #e8e8e8;
+        overflow-y: scroll;
+        margin-left: 10px;
+    }
+    
+    .ant-tabs-nav .ant-tabs-tab:active {
+        color: #ec7532!important;
     }
     
     .showtime__movie img {
@@ -795,9 +835,10 @@
     }
     
     .showtime__frame {
+        position: relative;
         border: 1px solid #e8e8e8;
         border-radius: 4px;
-        padding: 5px 0;
+        padding: 10px 0;
         box-shadow: 0px 0px 16px 2px rgba(112, 112, 112, 1);
     }
     
@@ -886,6 +927,11 @@
         color: white;
         font-size: 16px;
         padding: 8px 0;
+        opacity: 0.65;
+    }
+    
+    button.btn__booking:hover {
+        opacity: 1;
     }
     /* END SHOWTIMES */
     
@@ -1074,6 +1120,11 @@
         margin: 0 auto;
         background-color: unset;
         font-weight: 700;
+    }
+    
+    .top-search .ant-select-selection__placeholder {
+        color: #ffffff!important;
+        font-size: 17px;
     }
     
     .top-search input::-webkit-input-placeholder {

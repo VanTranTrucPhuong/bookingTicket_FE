@@ -18,13 +18,13 @@ const columns = [
         align: 'center',
     },
     {
-        title: 'TenGhe',
+        title: 'Tên Ghế',
         dataIndex: 'TenGhe',
         key: 'TenGhe',
         align: 'center',
     },
     {
-        title: 'LoaiGhe',
+        title: 'Loại Ghế',
         dataIndex: 'LoaiGhe',
         key: 'LoaiGhe',
         align: 'center',

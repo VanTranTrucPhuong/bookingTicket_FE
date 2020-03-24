@@ -364,7 +364,7 @@ class MovieAdmin extends Component {
                     <Button className="button__title__icon" icon="plus" type="primary" onClick={() => this.handleAddMovie()}>Thêm Phim</Button>
                     <Icon style={{ fontSize: 25 }} type="reload" onClick={(e) => this.handleReloadMovieList(e)} />
                 </div>
-                <Table id="somePrefix" size="small" rowKey={record => record.MaPhim} columns={columns} dataSource={this.props.movieArray} scroll={{ x: 'max-content'}}  bordered center  pagination={{defaultPageSize: 3}}/>
+                <Table id="somePrefix" rowKey={record => record.MaPhim} columns={columns} dataSource={this.props.movieArray} scroll={{ x: 'max-content'}}  bordered center  pagination={{defaultPageSize: 3}}/>
                 <Modal
                     title="Thêm lịch chiếu"
                     visible={this.state.visible}

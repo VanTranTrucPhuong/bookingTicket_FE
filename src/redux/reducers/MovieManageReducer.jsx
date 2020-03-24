@@ -35,10 +35,22 @@ export const MovieManageReducer = (state = initialState, action) => {
         }
         case types.CREATE_MOVIE: {
             state.createResult = action.createResult;
+            if (action.createResult === "Thêm phim thành công!"){
+                showMessageAlert('Notification', action.createResult , 'success')
+            }
+            else{
+                showMessageAlert('Notification', action.createResult.Content , 'success')
+            }
             return { ...state }
         }
         case types.UPDATE_MOVIE: {
-            state.updateResult = action.updateResult;           
+            state.updateResult = action.updateResult;  
+            if (action.updateResult === "Cập nhật phim thành công!"){
+                showMessageAlert('Notification', action.updateResult , 'success')
+            }
+            else{
+                showMessageAlert('Notification', action.updateResult.Content , 'success')
+            }         
             return { ...state }
         }
         case types.DELETE_MOVIE: {

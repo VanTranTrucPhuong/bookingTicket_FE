@@ -13,6 +13,9 @@ export const loginAction = (userLogin) => {
             }
         }).then(result => {
             console.log("getMember", result);
+            if (localStorage.getItem(settings.userLogin) != null){
+                localStorage.removeItem(settings.userLogin);
+            }
             localStorage.setItem(settings.userLogin, JSON.stringify(result.data));
             localStorage.setItem(settings.token, result.data.AccessToken);
             dispatch({

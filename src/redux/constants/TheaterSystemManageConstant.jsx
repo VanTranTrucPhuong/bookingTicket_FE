@@ -22,3 +22,9 @@ export const GET_RAP_LIST = 'GET_RAP_LIST'
 
 // Lấy danh sách ghế thuộc rap
 export const GET_GHE_LIST = 'GET_GHE_LIST'
+
+// Thêm ghế
+export const THEM_GHE = 'THEM_GHE'
+
+// Cập nhật loại ghế
+export const CAP_NHAT_LOAI_GHE = 'CAP_NHAT_LOAI_GHE'

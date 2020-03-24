@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from 'react'
-import { Redirect, withRouter } from 'react-router-dom'
+import { Redirect, withRouter, Prompt } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { getChiTietPhongVeAction, bookingTicketAction, putListGheDangDatAction, putDataInvokeAction } from '../../redux/actions/BookingManageAction';
 import Seat from './Seat';
-import { Modal, Spin, Button } from 'antd';
+import { Modal, Spin, Radio, } from 'antd';
 import { settings } from '../../config/settings';
 import { showMessageAlert, showMessageAlertEvent } from '../../templates/SweetAlert';
 import { sendMail, sendMailConfirmBooking } from '../../common/common'
@@ -14,6 +14,7 @@ import { connection } from '../../index'
 
 import { PayPalButton } from "react-paypal-button-v2";
 import { TheaterSystemManageReducer } from '../../redux/reducers/TheaterSystemManageReducer';
+import { getSettingAction } from '../../redux/actions/SettingAction';
 
 const { confirm } = Modal;
 const perUSD = 0.000043
@@ -32,11 +33,16 @@ class BookingTicket extends Component {
             minutes: 5,
             seconds: 0,
             isActive: false,
-            secondsElapsed: 300,//time in seconds
+            secondsElapsed: 90,//time in seconds is 5 
             // Send Email
             feedback: '', name: 'Name', email: 'dreamstore2201@gmail.com',
             content: '',
-            danhSachGheInvoke: []
+            danhSachGheInvoke: [],
+            isOnlinePayment: false,
+            paymentStatus: 0,
+            isBookingButton: false,
+            giamGia: 0,
+            flag: false
         }
     }
 
@@ -87,37 +93,92 @@ class BookingTicket extends Component {
     };
 
     componentDidMount() {
+        console.log('mounting');
+        // window.onbeforeunload = function (e) {
+        //     var message = "Your confirmation message goes here.",
+        //         e = e || window.event;
+        //     // For IE and Firefox
+        //     if (e) {
+        //         e.returnValue = message;
+        //     }
+        //     // For Safari
+        //     return message;
+        // };
         this._isMounted = true;
         if (this._isMounted) {
             this.props.getChiTietPhongVe(this.state.maLichChieu);
+            localStorage.setItem('MaLichChieu', this.state.maLichChieu);
+            this.receiveListGheRealTime();
+
             this.startTime();
+
+            if (localStorage.getItem(settings.userLogin) != null) {
+                this.getGiamGia();
+            }
         }
-
-        this.receiveListGheRealTime();
-
-        // this.interval = setInterval(() => {
-        //     this.props.getChiTietPhongVe(this.state.maLichChieu);
-        // }, 5000);
+        window.addEventListener('beforeunload', this.componentCleanup);
     }
+    // static async getDerivedStateFromProps(nextProps, prevState) {
+    //     //  this.receiveListGheRealTime(); let tempArray = [];
+    //     let tempArray = [];
+
+    //     await connection.on("ReceiveListGheDangDat", (dsGheDangDatReturn) => {
+
+    //         console.log(dsGheDangDatReturn, typeof (dsGheDangDatReturn));
+    //         tempArray = dsGheDangDatReturn.filter(item => item.maLichChieu === parseInt(prevState.maLichChieu));
+    //         console.log("tempArray", tempArray);
+    //         // this.setState({
+    //         //     danhSachGheInvoke: tempArray
+    //         // })
+    //         nextProps.putDataInvoke(tempArray)
+    //     })
+    //     console.log(1);
+    //     return { ...prevState, danhSachGheInvoke: tempArray };
+    // }
+
+    componentCleanup = () => { // this will hold the cleanup code
+        // whatever you want to do when the component is unmounted or page refreshes
+        this._isMounted = false;
+        console.log('unmounting');
+        // clearInterval(this.myInterval)
+        if (localStorage.getItem(settings.userLogin)) {
+            let taiKhoan = JSON.parse(localStorage.getItem(settings.userLogin)).TaiKhoan;
+            connection.invoke("SendRequestData", taiKhoan, this.state.maLichChieu);
+        }
+    }
+
 
     componentWillUnmount() {
-        this._isMounted = false;
-        // clearInterval(this.myInterval)
+        this.componentCleanup();
+        window.removeEventListener('beforeunload', this.componentCleanup);
     }
 
+
+    // Lấy % giảm giá
+    getGiamGia() {
+        let taiKhoan = JSON.parse(localStorage.getItem(settings.userLogin));
+        if (taiKhoan.MaLoaiThanhVien === 3) {
+            this.props.getSetting('GG1');
+            this.setState({
+                flag: true
+            })
+        }
+    }
+
+
     receiveListGheRealTime() {
-       
         let tempArray = [];
         connection.on("ReceiveListGheDangDat", (dsGheDangDatReturn) => {
             console.log(dsGheDangDatReturn, typeof (dsGheDangDatReturn));
-            tempArray= dsGheDangDatReturn.filter(item => item.maLichChieu === parseInt(this.state.maLichChieu));
-            console.log(tempArray);
-            this.setState({
-                danhSachGheInvoke: tempArray
-            })
+            tempArray = dsGheDangDatReturn.filter(item => item.maLichChieu === parseInt(this.state.maLichChieu));
+            console.log("tempArray", tempArray);
+            // this.setState({
+            //     danhSachGheInvoke: tempArray
+            // })
             this.props.putDataInvoke(tempArray)
         })
     }
+
 
     renderDanhSachGhe = () => {
         return this.props.danhSachGhe.map((ds, index) => {
@@ -151,7 +212,8 @@ class BookingTicket extends Component {
         })
         let objectDatVe = {
             MaLichChieu: this.props.match.params.MaLichChieu,
-            TongTien: tongTien,
+            TongTien: tongTien - tongTien*this.getValueUuDai()/100,
+            GiamGia: tongTien*this.getValueUuDai()/100,
             DanhSachVe: this.props.danhSachGheDaDat,
             TaiKhoan: JSON.parse(localStorage.getItem(settings.userLogin)).TaiKhoan
         }
@@ -162,7 +224,7 @@ class BookingTicket extends Component {
             taiKhoan: JSON.parse(localStorage.getItem(settings.userLogin)).TaiKhoan
         }
 
-        this.props.putListGheDangDat(objectDSGheDangDat);
+        // this.props.putListGheDangDat(objectDSGheDangDat);
 
         this.setState({
             objectDatVe: objectDatVe
@@ -217,8 +279,33 @@ class BookingTicket extends Component {
         })
     }
 
+
+    onChangePayment = e => {
+        console.log('radio checked', e.target.value);
+        let objectDatVe = this.state.objectDatVe;
+        let objectDatVeNew = {
+            ...objectDatVe,
+            TrangThaiThanhToan: e.target.value
+        }
+        if (e.target.value === 1) {
+            this.setState({
+                isOnlinePayment: true,
+                paymentStatus: e.target.value,
+                objectDatVe: objectDatVeNew
+            })
+            console.log(objectDatVeNew);
+        }
+        else if (e.target.value === 0) {
+            this.setState({
+                isOnlinePayment: false,
+                paymentStatus: e.target.value
+            })
+            console.log(objectDatVeNew);
+        }
+    };
+
     createOrder(data, actions) {
-        let vndMoney = this.state.tongTien;
+        let vndMoney = parseInt(this.state.tongTien);
         let dataList = [];
         this.props.danhSachGheDaDat.map((ghe, index) => {
             let giaVe = ghe.GiaVe;
@@ -264,7 +351,7 @@ class BookingTicket extends Component {
         return actions.order.capture().then(function (details) {
             // Show a success message to your buyer
             // showMessageAlert("Notification", "Transaction completed by " + details.payer.name.given_name, "success");
-            showMessageAlert('Notification', "Transaction completed by " + details.payer.name.given_name, 'success')
+            console.log('Notification', "Transaction completed by " + details.payer_given_name, 'success')
             // OPTIONAL: Call your server to save the transaction
             return axios({
                 url: settings.domainLocal + `/QuanLyDatVe/DatVe`,
@@ -274,14 +361,17 @@ class BookingTicket extends Component {
                     Authorization: 'Bearer ' + localStorage.getItem(settings.token)
                 }
             }).then((result) => {
-                console.log(result.data);
+                // console.log("Ma Thanh Toan", result.data);
                 if (result.data.Content === "Tài khoản người dùng không tồn tại!" || result.data.Content === "Tài khoản người dùng không tồn tại!") {
                     showMessageAlert('Warning', result.data.Content, 'warning')
                 }
-                else {
-                    showMessageAlertEvent('Notification', 'Hãy kiểm tra email của bạn!', 'success')
-                    sendMailConfirmBooking(danhSachGheDaDat, thongTinPhim, result.data)
-
+                else if(isNaN(result.data)) {
+                    console.log("Ma Thanh Toan", result.data);
+                    // setTimeout(() => {
+                    //     showMessageAlertEvent('Notification', 'Hãy kiểm tra email của bạn!', 'success')                        
+                    // }, 3000);
+                    console.log('danhSachGheDaDat', danhSachGheDaDat, 'result.data', result.data, 'this.getValueUuDai()', this.getValueUuDai());
+                    sendMailConfirmBooking(danhSachGheDaDat, thongTinPhim, result.data, this.getValueUuDai())
                 }
 
             }).catch(errors => {
@@ -314,14 +404,61 @@ class BookingTicket extends Component {
     }
     // end handle email
 
+
+    async handlePaymentInCash() {
+        let objectDatVe = this.state.objectDatVe;
+        var danhSachGheDaDat = this.props.danhSachGheDaDat;
+        const { thongTinPhim } = this.props;
+        let objectDatVeNew = {
+            ...objectDatVe,
+            TrangThaiThanhToan: 0
+        }
+        this.setState({
+            isBookingButton: true,
+        })
+        console.log(objectDatVeNew);
+        await this.props.bookingTicket(objectDatVeNew);
+        setTimeout(() => {
+            console.log(this.props.datVeResult);
+            // Kiểm tra kết quả đặt vé trước
+            sendMailConfirmBooking(danhSachGheDaDat, thongTinPhim, this.props.datVeResult, this.getValueUuDai())
+        }, 2000);
+    }
+
+    isEmpty(obj) {
+        for(var prop in obj) {
+            if(obj.hasOwnProperty(prop))
+                return false;
+        }
+    
+        return true;
+    }
+
+    getValueUuDai = () => {
+        if (this.state.flag){  
+            let giamGia = 0;        
+            giamGia = this.props.setting.map(st => {
+                return st.Setting;
+            })
+            return giamGia;
+        }
+        else return 0;
+    }
+    //PROMPT
+    // END PROMT
     render() {
         const { minutes, seconds } = this.state;
         const { thongTinPhim } = this.props;
-
+        let giamGia = 0;               
         if (!localStorage.getItem('userLogin')) {
             return <Redirect to='/' />
         }
         // const doTuoiObj = JSON.parse(thongTinPhim.DoTuoi.toString());
+        const radioStyle = {
+            display: 'block',
+            height: '30px',
+            lineHeight: '30px',
+        };
         return (
             <div className="booking__layout">
                 <div className="container">
@@ -393,6 +530,10 @@ class BookingTicket extends Component {
                                         {/* <br/> */}
                                     </div>
                                     <div className="d-flex justify-content-between border__bottom mt-3">
+                                        <p>Ưu đãi </p>
+                                        <p>{this.getValueUuDai()} %</p>
+                                    </div>
+                                    <div className="d-flex justify-content-between border__bottom mt-3">
                                         <p>Tổng tiền </p>
                                         {this.props.danhSachGheDaDat.reduce((tongTien, ghe, index) => {
                                             return tongTien += ghe.GiaVe;
@@ -407,14 +548,32 @@ class BookingTicket extends Component {
                                         onCancel={this.handleCancelPaypal}
                                         footer={false}
                                     >
-                                        <PayPalButton
-                                            // clientId="Aasw_xwhD8mUqXIm0BIACYfAhlC4iogrojeWkKXPE8OSk32UFryNDcUqhE3E6IHlXcSOz3yuwicoYFUw"
-                                            createOrder={(data, actions) => this.createOrder(data, actions)}
-                                            onApprove={(data, actions) => this.onApprove(data, actions)}
-                                            onError={(error) => {
-                                                console.log('error', error);
-                                            }}
-                                        />
+                                        {/* Thanh toán trực tuyến và thanh toán online */}
+                                        <div>
+                                            {this.state.isBookingButton ? <div style={{ marginTop: "0", textAlign: 'center' }}><div className="lds-ellipsis-color"><div></div><div></div><div></div><div></div></div></div> :
+                                                <div>
+                                                    <Radio.Group onChange={this.onChangePayment} value={this.state.paymentStatus} className="mb-4">
+                                                        <Radio style={radioStyle} value={0}>
+                                                            Payment in cash
+                                                        </Radio>
+                                                        <Radio style={radioStyle} value={1}>
+                                                            Payment online
+                                                        </Radio>
+                                                    </Radio.Group>
+                                                    {
+                                                        this.state.paymentStatus === 1 ? <PayPalButton
+                                                            // clientId="Aasw_xwhD8mUqXIm0BIACYfAhlC4iogrojeWkKXPE8OSk32UFryNDcUqhE3E6IHlXcSOz3yuwicoYFUw"
+                                                            createOrder={(data, actions) => this.createOrder(data, actions)}
+                                                            onApprove={(data, actions) => this.onApprove(data, actions)}
+                                                            onError={(error) => {
+                                                                console.log('error', error);
+                                                            }}
+                                                        /> : null
+                                                    }
+                                                    {/* Button dành cho thanh toán tiền mặt */}
+                                                    {this.state.paymentStatus === 0 ? <button className="btn__booking" onClick={() => this.handlePaymentInCash()}><span>Continue</span></button> : null}
+                                                </div>}
+                                        </div>
                                     </Modal>
                                 </div>
                             </div>
@@ -437,6 +596,10 @@ class BookingTicket extends Component {
                             <button className="gheNote gheDaDat"></button>
                             <span>Ghế đã đặt</span>
                         </span>
+                        <span className="mr-2">
+                            <button className="gheNote diffUserChoosing"></button>
+                            <span>Ghế đang có người chọn</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -448,7 +611,9 @@ const mapStateToProps = (state) => {
     return {
         danhSachGhe: state.BookingManageReducer.danhSachGhe,
         danhSachGheDaDat: state.BookingManageReducer.danhSachGheDaDat,
-        thongTinPhim: state.BookingManageReducer.thongTinPhim
+        thongTinPhim: state.BookingManageReducer.thongTinPhim,
+        datVeResult: state.BookingManageReducer.datVeResult,
+        setting: state.SettingReducer.setting
     }
 }
 
@@ -467,6 +632,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         putDataInvoke: (objectDsGheDangChon) => {
             dispatch(putDataInvokeAction(objectDsGheDangChon))
+        },
+        getSetting: (setting) => {
+            dispatch(getSettingAction(setting))
         }
     }
 }

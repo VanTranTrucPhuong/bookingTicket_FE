@@ -19,7 +19,7 @@ class HeaderAdmin extends Component {
     }
     getUser() {
         if (localStorage.getItem('userLogin')) {
-            console.log("abc");
+            // console.log("abc"    );
 
             this.setState({
                 taiKhoanDangNhap: JSON.parse(localStorage.getItem('userLogin'))

@@ -1,11 +1,12 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { getProFileAction } from '../redux/actions/MemberManageAction'
 import moment from 'moment'
-import { Icon, Table, Tag, Button, Modal, Tooltip, Checkbox, Spin } from 'antd'
-import { cancelTicketAction } from '../redux/actions/BookingManageAction'
+import { Icon, Table, Tag, Button, Modal, Tooltip, Checkbox, Spin, Switch } from 'antd'
+import { cancelTicketAction, huyVeAction } from '../redux/actions/BookingManageAction'
 import { getSettingAction } from '../redux/actions/SettingAction'
 import { showMessageAlert } from '../templates/SweetAlert'
+import Item from 'antd/lib/list/Item'
 
 const { confirm } = Modal;
 
@@ -17,7 +18,11 @@ class ProfileUser extends Component {
             visible: false,
             listTicket: [],
             ngayChieu: '',
-            setting: []
+            setting: [],
+            dangChon: false,
+            danhSachVeHuy: [],
+            durationHuy: 0,
+            classTrangThaiVe: ''
         }
     }
 
@@ -38,6 +43,7 @@ class ProfileUser extends Component {
 
 
     handleOpenList = (record) => {
+        console.log('record', record);
         this.setState({
             visible: !this.state.visible,
             listTicket: record,
@@ -46,9 +52,28 @@ class ProfileUser extends Component {
 
     handleOk = e => {
         console.log(e);
-        this.setState({
-            visible: false,
-        });
+        let danhSachVeHuy = this.state.danhSachVeHuy;
+        let danhSachTemp = [];
+        if(danhSachVeHuy.length === 0){
+            showMessageAlert('Warning', "Please choose cancel tickets", 'warning')
+        }
+        else{
+            danhSachVeHuy.map((veHuy, index) => {
+                danhSachTemp.push({
+                    MaVe: veHuy.MaVe,
+                    GiaVe: veHuy.GiaVe,
+                })
+            })
+            let mucHoanTra = this.props.setting.map(item => {
+                return item.Setting
+            })
+            let objectVeHuy ={
+                MucHoanTra: parseInt(mucHoanTra), //Lấy mức hoàn trả
+                DanhSachVeHuy: danhSachVeHuy
+            }
+            this.props.cancelTicket(objectVeHuy)
+            // console.log("danhSachVeHuy", danhSachVeHuy, this.props.setting);            
+        }
     };
 
     handleCancel = e => {
@@ -58,30 +83,69 @@ class ProfileUser extends Component {
         });
     };
 
-    checkConditionCancel = () => {
+    checkConditionCancel = (duration) => {
+        // if (duration > 0 && duration <= 1) {
+        //     showMessageAlert('Notification', 'Bạn không thể hủy vé. Lý do: cận ngày chiếu!', 'warning')
+        // }
 
-    }
-
-    cancelTicket = (duration, maThanhToan) => {
-        // alert(duration + ' ' + maThanhToan + ' ' + this.state.setting)
-        if (duration > 0 && duration <= 1) {
-            showMessageAlert('Notification', 'Bạn không thể hủy vé!', 'warning')
-        }
-        else if (duration >= 5) {
+        // Nếu ngày hủy cách ngày chiếu > 5 ngày thì mức hoàn tiền 50%
+        if (duration > 5) {
             this.props.getSetting('HT2');
         }
-        else if (duration < 5 && duration > 1) {
+        // Nếu ngày hủy cách ngày chiếu từ 2 đến 5 ngày thì mức hoàn tiền 20%
+        else if (duration <= 5 && duration > 1) {
             this.props.getSetting('HT1');
         }
-        let mucHoanTien = 0;
-        setTimeout(() => {
-            this.state.setting.map(st => {
-                mucHoanTien = st.Setting
-            })
-            this.showDeleteConfirm(maThanhToan, mucHoanTien);
-        }, 2000);
-
     }
+
+    cancelTicket = (duration, record) => {
+        // console.log("record Huy", record);
+        console.log("duration", duration);
+        this.checkConditionCancel(duration);
+        const veDuocChon = {
+            MaVe: record.MaVe,
+            TenGhe: record.TenGhe,
+            GiaVe: record.GiaVe,        
+        } 
+        
+        let array = this.state.danhSachVeHuy;
+        let index = array.findIndex(ve => ve.MaVe === veDuocChon.MaVe);
+        if (index !== -1) {
+            array.splice(index, 1)            
+        }
+        else {  
+            array.push(veDuocChon);
+            // this.setState({
+            //     classTrangThaiVe: 'veDangChon'
+            // })
+        }
+        this.setState({
+            danhSachVeHuy: array
+        }, () => {
+            console.log(this.state.danhSachVeHuy);
+        })
+    }
+
+    // cancelTicket = (duration, maThanhToan) => {
+    //     // alert(duration + ' ' + maThanhToan + ' ' + this.state.setting)
+    //     if (duration > 0 && duration <= 1) {
+    //         showMessageAlert('Notification', 'Bạn không thể hủy vé. Lý do: cận ngày chiếu!', 'warning')
+    //     }
+    //     else if (duration >= 5) {
+    //         this.props.getSetting('HT2');
+    //     }
+    //     else if (duration < 5 && duration > 1) {
+    //         this.props.getSetting('HT1');
+    //     }
+    //     let mucHoanTien = 0;
+    //     setTimeout(() => {
+    //         this.state.setting.map(st => {
+    //             mucHoanTien = st.Setting
+    //         })
+    //         this.showDeleteConfirm(maThanhToan, mucHoanTien);
+    //     }, 2000);
+
+    // }
 
     showDeleteConfirm = async (maThanhToan, mucHoanTien) => {
 
@@ -129,42 +193,6 @@ class ProfileUser extends Component {
                 }
             },
             {
-                title: 'Trạng thái hủy',
-                dataIndex: 'TrangThaiHuy',
-                key: 'TrangThaiHuy',
-                align: 'center',
-                render: (TrangThaiHuy) => (
-                    <div >
-                        <Checkbox checked={TrangThaiHuy} disabled />
-                    </div>
-                ),
-            },
-            {
-                title: 'Action',
-                key: 'operation',
-                align: 'center',
-                render: (record) => {
-                    let thoiGianChieu = (new Date(record.NgayChieuGioChieu)).toLocaleDateString();
-                    var now = moment(new Date()).format("DD.MM.YYYY"); //todays date
-                    var startDate = moment(thoiGianChieu, "DD.MM.YYYY");
-                    var endDate = moment(now, "DD.MM.YYYY");
-                    var duration = startDate.diff(endDate, 'days');
-                    console.log(duration);
-
-                    return (
-                        <div className="d-flex justify-content-between">
-                            <Button className="button__title__icon" type="danger" icon="delete" size={"small"} disabled={duration <= 0 || record.TrangThaiHuy} onClick={() => { this.cancelTicket(duration, record.MaThanhToan) }}> Cancel </Button>
-                        </div>
-                    )
-                },
-            },
-        ];
-
-        const data = this.props.profileInfor.ThongTinDatVe;
-
-        const columnsExpended = [
-            { title: 'Mã Vé', dataIndex: 'MaVe', key: 'MaVe', align: 'center', },
-            {
                 title: 'Ngày Đặt', dataIndex: 'NgayDat', key: 'NgayDat', align: 'center',
                 render: (NgayDat) => {
                     let Ngay = new Date(NgayDat)
@@ -181,10 +209,41 @@ class ProfileUser extends Component {
                         <span>{GioDat.toLocaleTimeString()}</span>
                     )
                 }
-            },
+            }
+        ];
+
+        const data = this.props.profileInfor.ThongTinDatVe;
+
+        const columnsExpended = [
+            { title: 'Mã Vé', dataIndex: 'MaVe', key: 'MaVe', align: 'center', },
             { title: 'Mã Ghế', dataIndex: 'MaGhe', key: 'MaGhe', align: 'center', },
             { title: 'Tên Ghế', dataIndex: 'TenGhe', key: 'TenGhe', align: 'center', },
+            { title: 'Giá Vé', dataIndex: 'GiaVe', key: 'GiaVe', align: 'center', },
+            {
+                title: 'Chọn Hủy',
+                key: 'TrangThaiHuy',
+                align: 'center',
+                render: (record) => {
+                    let thoiGianChieu = (new Date(this.state.listTicket.NgayChieuGioChieu)).toLocaleDateString();
+                    let now = moment(new Date()).format("DD.MM.YYYY"); //todays date
+                    let startDate = moment(thoiGianChieu, "DD.MM.YYYY");
+                    let endDate = moment(now, "DD.MM.YYYY");
+                    const duration = startDate.diff(endDate, 'days');
+                    console.log(duration);
+                    // disabled={duration <= 0 || record.TrangThaiHuy} onClick={() => { this.cancelTicket(duration, record.MaThanhToan) }}
+                    if (record.TrangThaiHuy) {
 
+                    }
+                    console.log("Switch", record);
+
+                    return (
+                        <div>
+                            <Switch disabled={record.TrangThaiHuy || duration <= 1} onClick={() => this.cancelTicket(duration, record)} />
+                            {/* <Button className={"button__title__icon " + `${this.state.classTrangThaiVe}`} type="danger" icon="delete" size={"small"} onClick={() => {  }}> Cancel </Button> */}
+                        </div>
+                    )
+                },
+            },
         ];
 
         return (
@@ -249,7 +308,7 @@ class ProfileUser extends Component {
                             <Table
                                 bordered
                                 pagination={{
-                                    defaultPageSize: 6,
+                                    defaultPageSize: 3,
                                 }}
                                 rowKey={record => record.MaThanhToan}
                                 className="components-table-demo-nested"
@@ -265,11 +324,13 @@ class ProfileUser extends Component {
                             <Modal className="modal__list__ticket"
                                 title="List ticket booked"
                                 visible={this.state.visible}
-                                footer={false}
+                                // footer={false}
+                                okText="Send request cancel"
+                                cancelText="Exit"
                                 onOk={this.handleOk}
                                 onCancel={this.handleCancel}
                             >
-                                <Table bordered rowKey={(record) => record.MaVe} columns={columnsExpended} dataSource={this.state.listTicket.DanhSachGhe} pagination={false} />
+                                <Table size='small' rowKey={(record) => record.MaVe} columns={columnsExpended} dataSource={this.state.listTicket.DanhSachGhe} pagination={false} />
                             </Modal>
                         </div>
                     </div>
@@ -282,7 +343,8 @@ class ProfileUser extends Component {
 const mapStateToProps = (state) => {
     return {
         profileInfor: state.MemberManageReducer.profileInfor,
-        setting: state.SettingReducer.setting
+        setting: state.SettingReducer.setting,
+        danhSachVeDuocChon: state.BookingManageReducer.danhSachVeDuocChon
     }
 }
 
@@ -293,6 +355,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         cancelTicket: (objectHuyVe) => {
             dispatch(cancelTicketAction(objectHuyVe))
+        },
+        chonVeHuy: (veDangChon) => {
+            dispatch(huyVeAction(veDangChon))
         },
         getSetting: (setting) => {
             dispatch(getSettingAction(setting))

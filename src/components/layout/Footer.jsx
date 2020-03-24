@@ -10,7 +10,7 @@ export default class Footer extends Component {
                     <div className="ht-footer-overlay"></div>
                         <div className="flex-parent-ft">
                             <div className="flex-child-ft item1">
-                                <a href="index-2.html"><img className="" src={process.env.PUBLIC_URL + '/img/logo.svg'} alt="logo-footer" /></a>
+                                <a href="index-2.html"><img src={process.env.PUBLIC_URL + '/img/logo1.png'} alt="logo" width={265} /></a>
                                 <p>197 Học Viện Công Nghệ Bưu Chính Viễn Thông<br />
                                     Quận 9, Thành Phố Hồ Chí Minh</p>
                                 <p>Call us: <a href="#">(+84) 39 888 4505</a></p>

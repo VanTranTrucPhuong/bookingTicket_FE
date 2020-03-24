@@ -28,33 +28,21 @@ const monthFormat = 'DD/MM/YYYY';
 
 const columns = [
     {
-        title: 'Mã Lịch Chiếu',
-        dataIndex: 'MaLichChieu',
-        key: 'MaLichChieu',
+        title: 'Cụm rạp',
+        dataIndex: 'TenCumRap',
+        key: 'TenCumRap',
         align: 'center'
     },
     {
-        title: 'Mã Cụm Rạp',
-        dataIndex: 'MaCumRap',
-        key: 'MaCumRap',
-        align: 'center'
-    },
-    {
-        title: 'Mã Phim',
+        title: 'Phim',
         dataIndex: 'MaPhim',
+        key: 'MaPhim'+ 'TenCumRap',
+        align: 'center'
+    },
+    {
+        title: 'Số lượng ghế',
+        dataIndex: 'SoLuongGhe',
         key: 'MaPhim',
-        align: 'center'
-    },
-    {
-        title: 'Tên Phim',
-        dataIndex: 'TenPhim',
-        key: 'TenPhim',
-        align: 'center'
-    },
-    {
-        title: 'Tháng/Năm',
-        dataIndex: 'ThangNam',
-        key: 'ThangNam',
         align: 'center'
     },
     {
@@ -68,33 +56,15 @@ const columns = [
 
 const columnsDT = [
     {
-        title: 'Mã Lịch Chiếu',
-        dataIndex: 'MaLichChieu',
-        key: 'MaLichChieu',
-        align: 'center'
-    },
-    {
-        title: 'Mã Cụm Rạp',
+        title: 'Cụm rạp',
         dataIndex: 'MaCumRap',
-        key: 'MaCumRap',
+        key: 'MaLichChieu',
         align: 'center'
     },
     {
         title: 'Mã Phim',
         dataIndex: 'MaPhim',
-        key: 'MaPhim',
-        align: 'center'
-    },
-    {
-        title: 'Tên Phim',
-        dataIndex: 'TenPhim',
-        key: 'TenPhim',
-        align: 'center'
-    },
-    {
-        title: 'Tháng/Năm',
-        dataIndex: 'ThangNam',
-        key: 'ThangNam',
+        key: 'MaPhim'+'MaCumRap',
         align: 'center'
     },
     {
@@ -324,7 +294,7 @@ class StatisticDasboard extends Component {
                         </Card>
                     </div>
                     <div style={{ width: "40%" }}>
-                        <Card type="inner" title="Thống kê doanh thu / tháng">
+                        <Card type="inner" title="Thống kê doanh thu / tháng (VND)">
                             <div className="year__content">
                                 Choose year &nbsp;&nbsp;<MonthPicker defaultValue={moment(this.state.initBeginDate, 'YYYY')} onChange={this.handleOnChangeYearDoanhThu} placeholder="Select year" />
                             </div>
@@ -353,17 +323,17 @@ class StatisticDasboard extends Component {
                 </div>
                 {/* Danh sách số lượng vé bán theo cụm rạp */}
                 <div className="mt-5">
-                    <Card type="inner" title="Số lượng vé bán hàng tháng" >
+                    <Card type="inner" title="Số lượng vé bán " >
                         Date Range: <RangePicker defaultValue={[moment(this.state.initBeginDate), moment(this.state.initEndDate)]} onChange={this.handleDatePickerChange} format={monthFormat} />
                         <br /> <br />
-                        <Table bordered rowKey={record => record.MaLichChieu} columns={columns} dataSource={this.props.danhSachThongKeVe} />
+                        <Table bordered rowKey={record => record.MaPhim + record.TenCumRap} columns={columns} dataSource={this.props.danhSachThongKeVe} />
                     </Card>
                 </div>
                 <div className="mt-5">
                     <Card type="inner" title="Doanh thu" >
                         Date Range: <RangePicker defaultValue={[moment(this.state.initBeginDate), moment(this.state.initEndDate)]} onChange={this.handleDatePickerDTChange} format={monthFormat} />
                         <br /> <br />
-                        <Table bordered rowKey={record => record.MaLichChieu} columns={columnsDT} dataSource={this.props.dsThongKeDoanhThu} />
+                        <Table bordered rowKey={record => record.MaPhim + record.MaCumRap} columns={columnsDT} dataSource={this.props.dsThongKeDoanhThu} />
                     </Card>
                 </div>
             </div>

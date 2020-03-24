@@ -39,7 +39,7 @@ class ShowingMovies extends Component {
 
                         <Slider {...settings}>
                             {this.props.movieArray.map((movie, index) => {
-                                if (movie.KhoiChieu) {
+                                if (movie.KhoiChieu && !movie.DaXoa) {
                                     // let doTuoi = JSON.stringify((movie.DoTuoi));
                                     let doTuoiObj = JSON.parse(movie.DoTuoi);
                                     return (

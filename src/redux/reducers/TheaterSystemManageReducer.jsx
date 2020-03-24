@@ -1,4 +1,5 @@
 import * as types from '../constants/TheaterSystemManageConstant';
+import { showMessageAlert } from '../../templates/SweetAlert';
 
 const initialState = {
     theaterSystemArray: [], //Hệ thống rạp
@@ -9,7 +10,8 @@ const initialState = {
     cumRapInfor: [],
     danhSachRap: [],
     thongTinCumRap: {},
-    danhSachGhe: []
+    danhSachGhe: [],
+    themGheResult: {}
 }
 
 export const TheaterSystemManageReducer = (state = initialState, action) => {
@@ -54,6 +56,16 @@ export const TheaterSystemManageReducer = (state = initialState, action) => {
             state.danhSachGhe = action.danhSachGhe;
             return { ...state }
         }        
+        // Thêm ghế
+        case types.THEM_GHE: {
+            state.themGheResult = action.themGheResult;
+            if (action.themGheResult === "Thêm ghế thành công!"){
+                showMessageAlert('Notification', action.themGheResult, 'success')
+            }
+            else {
+                showMessageAlert('Notification', action.themGheResult, 'warning')
+            }
+        }
 
         default:
             return state

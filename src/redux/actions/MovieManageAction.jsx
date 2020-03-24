@@ -11,7 +11,7 @@ export const getMovieListAction = () => {
       console.log("getMovieListAction", result);
       let comingMovie = [];
       result.data.map((movie, i) => {
-        if (movie.SapChieu) {
+        if (movie.SapChieu && movie.DaXoa === false) {
           comingMovie.push(movie)
         }
       })

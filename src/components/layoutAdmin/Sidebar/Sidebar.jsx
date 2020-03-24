@@ -30,7 +30,7 @@ class Sidebar extends Component {
                     onCollapse={this.onCollapse}
                 >
                     <div className="logo">
-                        <img className="" src={process.env.PUBLIC_URL + '/img/logo.svg'} alt="logo-admin" />
+                        <img src={process.env.PUBLIC_URL + '/img/logo1.png'} alt="logo" width={265} />
                     </div>
                     <Menu theme="dark" defaultSelectedKeys={['6']} defaultOpenKeys={['sub1']} mode="inline">
                         <SubMenu
@@ -46,9 +46,9 @@ class Sidebar extends Component {
                                 this.props.HTRArray.map((htr, index) => {
                                     return (
                                         <Menu.Item key={index}>
-                                            <NavLink to={`/admin/statisticdashboard/${htr.MaHeThongRap}`}><img src={htr.Logo} width={20} height={20}/>&nbsp;&nbsp;{htr.TenHeThongRap}</NavLink>
+                                            <NavLink to={`/admin/statisticdashboard/${htr.MaHeThongRap}`}><img src={htr.Logo} width={20} height={20} />&nbsp;&nbsp;{htr.TenHeThongRap}</NavLink>
                                         </Menu.Item>
-                                    ) 
+                                    )
                                 })
                             }
                             {/* <Menu.Item key="0">
@@ -57,9 +57,9 @@ class Sidebar extends Component {
                             <Menu.Item key="1">
                                 <NavLink to='/admin/statisticdashboard/CGV'>CGV</NavLink>
                             </Menu.Item> */}
-                                         
-                            
-                        
+
+
+
 
                         </SubMenu>
                         <SubMenu
@@ -74,7 +74,7 @@ class Sidebar extends Component {
                             <Menu.Item key="6">
                                 <NavLink to={'/admin/movieadmin'}>Phim</NavLink>
                             </Menu.Item>
-                            <Menu.Item key="7">Thể Loại</Menu.Item>
+                            {/* <Menu.Item key="7">Thể Loại</Menu.Item> */}
                         </SubMenu>
                         <SubMenu
                             key="sub2"

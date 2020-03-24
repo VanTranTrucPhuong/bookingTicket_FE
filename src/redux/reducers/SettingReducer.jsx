@@ -1,7 +1,7 @@
 import * as types from '../constants/SettingConstant';
 
 const initialState = {
-    setting: [],
+    setting: {},
 }
 
 export const SettingReducer = (state = initialState, action) => {

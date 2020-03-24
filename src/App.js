@@ -27,6 +27,7 @@ import ShowingMovies from './components/layout/ShowingMovies';
 import RapManage from './components/layoutAdmin/TheaterManage/RapManage';
 import GheManage from './components/layoutAdmin/TheaterManage/GheManage';
 import Demo from './components/layout/Demo';
+import ModalAddDSGhe from './components/layoutAdmin/TheaterManage/ModalAddDSGhe';
 
 function App() {
   return (
@@ -100,6 +101,8 @@ function App() {
           <AdminTemplate exact path='/admin/rapmanage/:MaCumRap' Component={RapManage} />
           {/* ghe */}
           <AdminTemplate exact path='/admin/ghemanage/:MaRap' Component={GheManage} />
+          {/* Thêm ghế */}
+          <AdminTemplate exact path='/admin/themghe/:MaRap' Component={ModalAddDSGhe} />
 
         </Switch>
       </Fragment>

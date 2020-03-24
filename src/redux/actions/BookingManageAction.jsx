@@ -11,7 +11,8 @@ export const createLichChieuAction = (lichChieu) => {
                 MaPhim: lichChieu.MaPhim,
                 NgayChieuGioChieu: lichChieu.NgayChieuGioChieu,
                 MaRap: lichChieu.MaRap,
-                GiaVe: lichChieu.GiaVe
+                GiaVe: lichChieu.GiaVe,
+                GiamGia: lichChieu.GiamGia
             }
         }).then(result => {
             console.log("createLichChieuAction", result);
@@ -50,10 +51,27 @@ export const bookingSeatAction = (gheDuocChon, maLichChieu) => {
     }
 }
 
+export const huyVeAction = (veDuocChon) => {
+    return {
+        type: types.CHON_VE_HUY,
+        veDuocChon
+    }
+}
+
+
+
 export const putDataInvokeAction = (objectDsGheDangChon) => {
     return {
         type: types.PUT_DANH_SACH_GHE_DANG_DAT,
         objectDsGheDangChon,
+    }
+}
+
+// CHỈNH SỬA GHẾ ADMIN
+export const updateSeatAction = (gheChonUpdate) => {
+    return {
+        type: types.CHON_GHE_UPDATE,
+        gheChonUpdate,
     }
 }
 
@@ -97,11 +115,10 @@ export const bookingTicketAction = (objectDatVe) => {
         }).then(result => {
             dispatch({
                 type: types.DAT_VE,
-                datVeResult: result.data
+                datVeResult: result.data,
+                objectDatVe: objectDatVe
             })
-            // swal.fire('Thông báo', result.data, 'success').then(resultdata => {
-            //     window.location.reload()
-            // });
+            
         }).catch(errors => {
             // console.log(errors.response.data);
         })
@@ -113,8 +130,9 @@ export const cancelTicketAction = (objectHuyVe) => {
     console.log(objectHuyVe);
     return dispatch => {
         axios({
-            url: settings.domainLocal + `/QuanLyDatVe/HuyVe?maThanhToan=${objectHuyVe.maThanhToan}&mucHoanTien=${objectHuyVe.mucHoanTien}`,
+            url: settings.domainLocal + `/QuanLyDatVe/HuyVe`,
             method: 'PUT',
+            data: objectHuyVe,
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem(settings.token)
             }
@@ -150,3 +168,21 @@ export const putListGheDangDatAction = (objectGheDangDat) => {
     }
 }
 
+// Cập nhật loại ghế
+export const capNhatLoaiGheAction = (mangGheCapNhat) => {
+    return dispatch => {
+      axios({
+        url: settings.domainLocal + `/CumRap/CapNhatLoaiGhe`,
+        method: 'Put',
+        data: mangGheCapNhat
+      }).then(result => {
+        console.log("capNhatLoaiGheAction", result.data);
+        dispatch({
+          type: types.CAP_NHAT_LOAI_GHE,
+          resultCapNhatLoaiGhe: result.data
+        })
+      }).catch((errors) => {
+        // console.log(errors.response.data);
+      })
+    }
+  }

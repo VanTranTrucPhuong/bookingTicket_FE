@@ -1,12 +1,14 @@
 .ant-card-type-inner .ant-card-head {
     padding: 0 24px;
     /* background: #fafafa; */
-    background-image: linear-gradient(to right, #ec7532, #fbbd61);
+    background-color: orange;
 }
 
 .ant-card-type-inner .ant-card-head-title {
     padding: 12px 0;
-    font-size: 18px;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: 600;
     color: rgba(255, 255, 255, 065);
 }
 

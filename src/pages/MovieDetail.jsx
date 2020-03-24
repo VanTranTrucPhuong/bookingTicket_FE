@@ -174,10 +174,12 @@ class MovieDetail extends Component {
                                             var endDate = moment(now, "DD.MM.YYYY");
                                             var duration = endDate.diff(startDate, 'days');
                                             var parseTime = timeString => moment(timeString, 'HH:mm')
-                                            let timeCurrent = moment(new Date()).format("HH:MM");
-                                            let timeLC = moment(new Date(chiTiet.ThoiGianChieu)).format("HH:MM");
+                                            let timeCurrent = moment(new Date()).format("HH:mm");
+                                            let timeLC = moment(new Date(chiTiet.NgayChieuGioChieu)).format("HH:mm");
                                             // console.log('now', now, "thoiGianChieu", thoiGianChieu);
+                                            
                                             if (duration === 0) {
+                                                // console.log("timeLC", timeLC, 'timeCurrent', timeCurrent);   
                                                 return <button key={index} className="btn mr-2" disabled={parseTime(timeLC).isBefore(parseTime(timeCurrent))} onClick={() => this.handleBookingPage(chiTiet.MaLichChieu)
                                                 }>{thoiGianView.toLocaleTimeString()}</button>
                                             }
@@ -208,14 +210,16 @@ class MovieDetail extends Component {
             })
             let lastDate = thoiGianSetting - dateDiffReturn;
             // console.log(lastDate);
-            while (n < lastDate) {
+            while (n <= lastDate) {
                 dates.push(current.format("YYYY-MM-DD"))
                 current.add(1, "day")
                 n++;
             }
+            // console.log("dates", dates);
         }
         // console.log('dates',  this.props.setting);
         return (
+            
             // <section className="showtime">
             <div className="container showtime__detail">
                 <Tabs defaultActiveKey="0">

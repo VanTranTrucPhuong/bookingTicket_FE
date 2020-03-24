@@ -6,6 +6,8 @@ import { compose } from 'C:/Users/DELL/AppData/Local/Microsoft/TypeScript/3.6/no
 import { loginAction, registerAction } from '../../redux/actions/MemberManageAction'
 import Login from '../../pages/Login';
 import SignUp from '../../pages/SignUp';
+import { settings } from '../../config/settings';
+import { connection } from '../../index'
 
 class Header extends Component {
     constructor(props) {
@@ -20,14 +22,34 @@ class Header extends Component {
     componentDidMount() {
         this.getUser();
         window.addEventListener("scroll", this.resizeHeaderOnScroll);
+        // window.removeEventListener('beforeunload', this.componentCleanup);
     }
+
+    componentCleanup = () => { // this will hold the cleanup code
+        // whatever you want to do when the component is unmounted or page refreshes
+        this._isMounted = false;
+        console.log('unmounting');
+        // clearInterval(this.myInterval)
+        if (localStorage.getItem(settings.userLogin)) {
+            let taiKhoan = JSON.parse(localStorage.getItem(settings.userLogin)).TaiKhoan;
+            if (localStorage.getItem('MaLichChieu')){
+                connection.invoke("SendRequestData", taiKhoan, localStorage.getItem('MaLichChieu'));
+            }
+        }
+    }
+
+
+    // componentWillUnmount() {
+    //     this.componentCleanup();
+    //     window.removeEventListener('beforeunload', this.componentCleanup);
+    // }
+
 
     getUser() {
         if (localStorage.getItem('userLogin')) {
-            console.log("abc");
-
+            // console.log("abc");
             this.setState({
-                taiKhoanDangNhap: JSON.parse(localStorage.getItem('userLogin'))
+                taiKhoanDangNhap: JSON.parse(localStorage.getItem(settings.userLogin))
             })
         }
     }
@@ -129,7 +151,7 @@ class Header extends Component {
                         </div>
                         <nav className="container header__navbar navbar navbar-expand-lg py-0">
                             <a className="navbar-brand py-0" href="#">
-                                <img src={process.env.PUBLIC_URL + '/img/logo.svg'} alt="logo" />
+                                <img src={process.env.PUBLIC_URL + '/img/logo1.png'} alt="logo" width={265} />
                             </a>
                             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
                                 <span className="navbar-toggler-icon" />

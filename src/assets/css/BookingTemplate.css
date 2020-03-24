@@ -98,7 +98,7 @@
 .typeseat {
     float: left;
     color: wheat;
-    margin-left: 70px;
+    margin-left: 40px;
     margin-top: 50px;
 }
 
@@ -108,4 +108,8 @@
 
 #somePrefix .ant-table-middle .ant-table-scroll {
     height: 240px;
+}
+
+.veDangChon {
+    background-color: #49a09d;
 }

@@ -40,7 +40,7 @@ class Seat extends Component {
         tempArray.map((item) => {
             let tempDsGhe = JSON.parse(item.danhSachGhe);        
             tempDsGhe.map((gheRealTime) => {
-                if (gheRealTime.MaGhe == ghe.MaGhe) {
+                if (gheRealTime.MaGhe === ghe.MaGhe) {
                     console.log("tempDsGhe", gheRealTime);
                     let taiKhoan = JSON.parse(localStorage.getItem(settings.userLogin)).TaiKhoan;
                     if (item.taiKhoan !== taiKhoan){

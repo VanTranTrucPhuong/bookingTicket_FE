@@ -11,3 +11,9 @@ export const CHON_GHE_ADMIN = 'CHON_GHE_ADMIN';
 export const HUY_VE = 'HUY_VE';
 // Put danh sách ghế đang đặt
 export const PUT_DANH_SACH_GHE_DANG_DAT = 'PUT_DANH_SACH_GHE_DANG_DAT'
+// Chỉnh sửa ghế
+export const CHON_GHE_UPDATE = 'CHON_GHE_UPDATE'
+// Cập nhật loại ghế
+export const CAP_NHAT_LOAI_GHE = 'CAP_NHAT_LOAI_GHE'
+// Chọn vé để hủy
+export const CHON_VE_HUY = 'CHON_VE_HUY'

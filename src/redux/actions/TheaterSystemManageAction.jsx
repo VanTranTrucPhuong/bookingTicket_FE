@@ -158,3 +158,22 @@ export const getGheListAction = (maRap) => {
   }
 }
 
+// THÊM GHẾ
+export const themGheAction = (mangGheThem) => {
+  return dispatch => {
+    axios({
+      url: settings.domainLocal + `/CumRap/ThemGhe`,
+      method: 'Post',
+      data: mangGheThem
+    }).then(result => {
+      console.log("themGheAction", result.data);
+      dispatch({
+        type: types.THEM_GHE,
+        themGheResult: result.data
+      })
+    }).catch((errors) => {
+      // console.log(errors.response.data);
+    })
+  }
+}
+

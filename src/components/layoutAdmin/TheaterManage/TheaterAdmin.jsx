@@ -180,6 +180,7 @@ class TheaterAdmin extends Component {
                 },
             ];
             return <Table
+                rowKey={record => record.MaHeThongRap}
                 onRow={(record, rowIndex) => {
                     return {                      
                         onDoubleClick: event => { this.props.history.push('/admin/rapmanage/' + record.MaCumRap)}, // double click row                      

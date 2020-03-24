@@ -118,7 +118,9 @@ class HomePage extends Component {
                     var startDate = moment(thoiGianChieu, "DD.MM.YYYY");
                     var endDate = moment(now, "DD.MM.YYYY");
                     var duration = endDate.diff(startDate, 'days');
+                    // let count = 0;
                     if (duration === 0) {
+                        // count = count + 1;
                         return (
                             <Option className="select__search" key={index} value={time}>{time}</Option>
                         )
@@ -135,8 +137,8 @@ class HomePage extends Component {
                 return;
             }
             let dateTime = values.date + ' ' + values.time;
-            console.log("value", values);
-            this.props.searchLCAction(values.maPhim, values.maCumRap, moment(dateTime).format("YYYY-MM-DD hh:mm:ss"));
+            console.log("value", values, moment(dateTime).format("YYYY-MM-DD HH:mm:ss"));
+            this.props.searchLCAction(values.maPhim, values.maCumRap, moment(dateTime).format("YYYY-MM-DD HH:mm:ss"));
             
             this.setState({isSearchButton: true})
 
@@ -154,7 +156,7 @@ class HomePage extends Component {
                         isSearchButton: false
                     });
                 }
-            }, 2000);
+            }, 3000);
         })
     }
 
@@ -204,7 +206,7 @@ class HomePage extends Component {
                         </Form.Item>
                         <Form.Item>
                             {getFieldDecorator('time', {
-                                rules: [{ required: true, message: 'Please input your username!' }],
+                                rules: [{ required: true, message: 'Please input your time!' }],
                             })(
                                 <Select placeholder="-- Select a showtime --">
                                     {

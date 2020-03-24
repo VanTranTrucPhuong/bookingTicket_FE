@@ -64,3 +64,31 @@
 .expend__cumRap .ant-table table {
     border-spacing: unset;
 }
+
+
+/* Rạp manage */
+
+.ant-table-title {
+    position: relative;
+    top: 1px;
+    border-radius: unset;
+    text-transform: uppercase;
+    background: orange;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+thead.ant-table-thead {
+    text-transform: uppercase;
+}
+
+.ant-card-head-title {
+    font-size: 16px;
+    text-transform: uppercase;
+    color: white;
+}
+
+.ant-card-head {
+    background-color: orange;
+}

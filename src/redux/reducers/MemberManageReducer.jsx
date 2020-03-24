@@ -17,10 +17,10 @@ export const MemberManageReducer = (state = initialState, action) => {
         case types.LOGIN: {
             console.log("Thành Công");
             state.userLogin = action.resultLogin;
-            if (action.resultLogin.Content === "Tài khoản hoặc mật khẩu không đúng!"){
+            if (action.resultLogin.Content === "Tài khoản hoặc mật khẩu không đúng!" || action.resultLogin.Content === "Tài khoản không tồn tại!"){
                 showMessageAlert("Warning", action.resultLogin.Content, "warning")
             }else{
-                showMessageAlertEvent("Notification", "Đăng nhập thành công!", "success");
+                window.location.reload();
             }
             return { ...state }
         }

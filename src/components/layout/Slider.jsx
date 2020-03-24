@@ -49,9 +49,9 @@ export default class Slider extends Component {
                                 </div> */}
                             </div>
                             <div className="carousel-item">
-                                <img className="d-block w-100" src={process.env.PUBLIC_URL + "/img/hoahaugiangho.jpg"} alt="Third slide" />
+                                <img className="d-block w-100" src={process.env.PUBLIC_URL + "/img/mat-biec.jpg"} alt="Third slide" />
                                 <div className="carouse-item__overlay" />
-                                <a style={{ textAlign: "center", color: "#ffffff" }} data-fancybox href="https://www.youtube.com/watch?v=4yAZsppktho"><i className="fa fa-play d-block mx-auto mb-3 video-play-slider" /></a>
+                                <a style={{ textAlign: "center", color: "#ffffff" }} data-fancybox href="https://www.youtube.com/watch?v=MNm77lvTfi4"><i className="fa fa-play d-block mx-auto mb-3 video-play-slider" /></a>
 
                                 {/* <div className="container carousel-item__caption text-white">
                                     <span className="title">ACTION, ADVENTURE, FANTASY</span>

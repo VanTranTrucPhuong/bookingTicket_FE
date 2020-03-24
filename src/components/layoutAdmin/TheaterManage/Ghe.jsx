@@ -1,19 +1,30 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux';
-import { bookingSeatAction, chonGheAdminAction } from '../../../redux/actions/BookingManageAction';
+import { bookingSeatAction, chonGheAdminAction, updateSeatAction } from '../../../redux/actions/BookingManageAction';
 import { isEqual } from 'lodash';
-import { Menu, Dropdown } from 'antd';
+import { Menu, Dropdown, Tooltip } from 'antd';
 import { element } from 'prop-types';
 import { showMessageAlert } from '../../../templates/SweetAlert';
+import { capNhatLoaiGheAction } from '../../../redux/actions/BookingManageAction';
 
 
 class Ghe extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dangChon: false
+            dangDat: false
         }
     }
+
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        console.log("nextProps", nextProps);
+        console.log("prevState", prevState);
+        // return {
+        //     // ...prevState, danhSachGhe: nextProps.danhSachGhe
+        // }
+    }
+
 
     handleOnChange = () => {
         this.setState({
@@ -23,29 +34,81 @@ class Ghe extends Component {
 
     renderGhe = () => {
         const onClick = ({ key }) => {
-            alert(`Click on item ${key}`);
+            if (key == 1) {
+                let mangGheUpdate = this.props.dsGheChonUpdate;
+                if (mangGheUpdate.length === 0) {
+                    showMessageAlert('Warning', 'Vui lòng chọn ghế', 'warning')
+                }
+                let tenLoaiGhe = 'Vip';
+                let mangGheUpdateTemp = [];
+                mangGheUpdate.map((ghe, index) => {
+                    mangGheUpdateTemp.push({
+                        MaGhe: ghe.MaGhe
+                    })
+                })
+                if (mangGheUpdateTemp.length > 0) {
+                    let objectUpdate = {
+                        MaRap: parseInt(this.props.maRap),
+                        TenLoaiGhe: tenLoaiGhe,
+                        DanhSachGheUpdate: mangGheUpdateTemp
+                    }
+                    console.log(objectUpdate);
+                    this.props.capNhatLoaiGhe(objectUpdate);
+                }
+            }
+
+            if (key == 2) {
+                let mangGheUpdate = this.props.dsGheChonUpdate;
+                if (mangGheUpdate.length === 0) {
+                    showMessageAlert('Warning', 'Vui lòng chọn ghế', 'warning')
+                }
+                let tenLoaiGhe = 'Thường';
+                let mangGheUpdateTemp = [];
+                mangGheUpdate.map((ghe, index) => {
+                    mangGheUpdateTemp.push({
+                        MaGhe: ghe.MaGhe
+                    })
+                })
+                if (mangGheUpdateTemp.length > 0) {
+                    let objectUpdate = {
+                        MaRap: parseInt(this.props.maRap),
+                        TenLoaiGhe: tenLoaiGhe,
+                        DanhSachGheUpdate: mangGheUpdateTemp
+                    }
+                    console.log(objectUpdate);
+                    this.props.capNhatLoaiGhe(objectUpdate);
+                }
+            }
         };
 
         const menu = (
             <Menu onClick={onClick}>
-                <Menu.Item key="1">1st menu item</Menu.Item>
-                <Menu.Item key="2">2nd memu item</Menu.Item>
-                <Menu.Item key="3">3rd menu item</Menu.Item>
+                <Menu.Item key="1">Vip</Menu.Item>
+                <Menu.Item key="2">Thường</Menu.Item>
             </Menu>
         );
 
         const { ghe, index } = this.props;
         let classTrangThaiGhe = 'ghe ';
         let tenGhe = ghe.STT;
-
-        classTrangThaiGhe += ghe.LoaiGhe === 'Thường' ? 'ghe ' : ghe.LoaiGhe === 'Vip' ? 'gheVip ' : 'gheDoi';
+        if (ghe.DaDat) {
+            classTrangThaiGhe += ghe.DaDat ? 'gheDaDat ' : ' ';
+        } else {
+            if (this.state.dangDat) {
+                classTrangThaiGhe += 'gheDangDat ';
+            } else {
+                classTrangThaiGhe += ghe.LoaiGhe === 'Thường' ? 'ghe ' : ghe.LoaiGhe === 'Vip' ? 'gheVip ' : 'gheDoi';
+            }
+        }
 
         return (
             <Fragment>
                 <Dropdown overlay={menu} trigger={['contextMenu']}>
-                    <button id="idghe" onClick={this.chonGhe} className={`${classTrangThaiGhe}`}>
-                        {tenGhe}
-                    </button>
+                    <Tooltip title="Click chuột phải để edit ghế">
+                        <button id="idghe" onClick={this.chonGhe} className={`${classTrangThaiGhe}`}>
+                            {this.state.dangDat ? tenGhe : ''}
+                        </button>
+                    </Tooltip>
                 </Dropdown>
             </Fragment>
         )
@@ -53,14 +116,19 @@ class Ghe extends Component {
 
     chonGhe = () => {
         //Sau khi setState thay đổi trang thái ghế sẽ đưa dữ liệu lên reducer xử lý
-        if (!this.state.dangChon) {
-            this.setState({
-                dangChon: !this.state.dangChon
-            }, () => {
-                const gheDuocChon = this.props.ghe;
-                this.props.chonGheAdmin(gheDuocChon); //Gọi hàm đưa lên reducer
-            })
-        }
+        // if (!this.state.dangChon) {
+        this.setState({
+            dangDat: !this.state.dangDat
+        }, () => {
+            const gheDuocChon = {
+                MaGhe: this.props.ghe.MaGhe,
+                STT: this.props.ghe.STT,
+                TenGhe: this.props.ghe.TenGhe,
+                DangDat: this.state.dangDat
+            }
+            this.props.chonGhe(gheDuocChon); //Gọi hàm đưa lên reducer
+        })
+        // }
     }
 
     alertMessage = () => {
@@ -78,13 +146,18 @@ class Ghe extends Component {
 
 const mapStateToProps = (state) => {
     return {
-
+        dsGheChonUpdate: state.BookingManageReducer.dsGheChonUpdate
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        chonGhe: (gheDuocChon) => {
+            dispatch(updateSeatAction(gheDuocChon))
+        },
+        capNhatLoaiGhe: (mangGheCapNhat) => {
+            dispatch(capNhatLoaiGheAction(mangGheCapNhat))
+        }
     }
 }
 

@@ -4,7 +4,7 @@ import { withRouter } from "react-router";
 import { connect } from 'react-redux'
 import { getTheaterSystemListAction, getTheaterListAction, getLichChieuHTRListAction } from '../../redux/actions/TheaterSystemManageAction';
 
-import { Tabs } from 'antd';
+import { Tabs, Tag } from 'antd';
 import moment from 'moment';
 import { showMessageAlert } from '../../templates/SweetAlert';
 
@@ -24,7 +24,7 @@ class ShowtimesHome extends Component {
         if (!localStorage.getItem('userLogin')) {
             showMessageAlert("Note", "Login to continue booking!", "warning")
         }
-        else{
+        else {
             this.props.history.push(`/bookingticket/${maLichChieu}`);
         }
     }
@@ -32,17 +32,17 @@ class ShowtimesHome extends Component {
     checkLichChieu = (phim) => {
         let mangLC = [];
         // if(phim.MaPhim === maPhim){
-            phim.ListNgayChieuGioChieu.map((tgc, index) => {
-                let thoiGianChieu = moment(new Date(tgc.ThoiGianChieu)).format("DD.MM.YYYY");
-                var now = moment(new Date()).format("DD.MM.YYYY"); //todays date
-                // console.log('now', now, "thoiGianChieu", thoiGianChieu);
-                var startDate = moment(thoiGianChieu, "DD.MM.YYYY");
-                var endDate = moment(now, "DD.MM.YYYY");
-                var duration = endDate.diff(startDate, 'days');
-                if (duration === 0){
-                    mangLC.push(duration);
-                }
-            })
+        phim.ListNgayChieuGioChieu.map((tgc, index) => {
+            let thoiGianChieu = moment(new Date(tgc.ThoiGianChieu)).format("DD.MM.YYYY");
+            var now = moment(new Date()).format("DD.MM.YYYY"); //todays date
+            // console.log('now', now, "thoiGianChieu", thoiGianChieu);
+            var startDate = moment(thoiGianChieu, "DD.MM.YYYY");
+            var endDate = moment(now, "DD.MM.YYYY");
+            var duration = endDate.diff(startDate, 'days');
+            if (duration === 0) {
+                mangLC.push(duration);
+            }
+        })
         // }
         if (mangLC.length > 0) {
             return true;
@@ -64,7 +64,7 @@ class ShowtimesHome extends Component {
                                     <div className="theater__cumrap d-flex align-items-center">
                                         {/* className="theater__cumrap" */}
                                         <div className="theater__image mr-4">
-                                            <img src={process.env.PUBLIC_URL +"/img/bhd.jpg"} alt="Rạp" width="50px" height="50px" />
+                                            <img src={process.env.PUBLIC_URL + "/img/bhd.jpg"} alt="Rạp" width="50px" height="50px" />
                                         </div>
                                         <div className="theater__infor">
                                             <p className="mb-0">{r.TenCumRap}</p>
@@ -77,74 +77,79 @@ class ShowtimesHome extends Component {
                                     </div>
                                 } key={a}>
                                     {/* Danh sách phim */}
-                                    {theater.mangLichChieu.map((lichChieu, index) => {
-                                        // console.log("lichChieu", lichChieu);
-                                        return lichChieu.ListCumRap.map((lc, i) => {
-                                            if (lc.MaCumRap === r.MaCumRap) {
-                                                console.log("lc.MaCumRap", lc.MaCumRap);
-                                                return lc.ListPhim.map((phim, i) => {
-                                                    // if (duration == 0) 
-                                                    if (this.checkLichChieu(phim))
-                                                    {
-                                                        return (
-                                                            <div key={i} className="row  py-4 pl-4 showtime__movie">
-                                                                <div className="col-2">
-                                                                    <img data-fancybox="images" src={phim.HinhAnh} className="img-fluid" />
-                                                                </div>
-                                                                <div className="col-10">
-                                                                    <div className="showtime__detail">
-                                                                        <span>ACTION, ADVENTURE, FANTASY</span>
-                                                                        <h1>{phim.TenPhim}</h1>
-                                                                        <p>{phim.MoTa}</p>
-                                                                        <a href="#" className="d-block mb-4">
-                                                                            FULL SYNOPSIS
+                                    <div className="showtime__content">
+                                        {theater.mangLichChieu.map((lichChieu, index) => {
+                                            // console.log("lichChieu", lichChieu);
+                                            return lichChieu.ListCumRap.map((lc, i) => {
+                                                if (lc.MaCumRap === r.MaCumRap) {
+                                                    console.log("lc.MaCumRap", lc.MaCumRap);
+                                                    return lc.ListPhim.map((phim, i) => {
+                                                        // if (duration == 0) 
+                                                        if (this.checkLichChieu(phim)) {
+                                                            return (
+                                                                <div key={i} className="row  py-4 pl-4 showtime__movie">
+                                                                    <div className="col-2">
+                                                                        <img data-fancybox="images" src={phim.HinhAnh} className="img-fluid" />
+                                                                    </div>
+                                                                    <div className="col-10">
+                                                                        <div className="showtime__detail">
+                                                                            <div className='mb-3 d-flex'>
+                                                                                {phim.ListTheLoai.map((theLoai, i) => {
+                                                                                    return (<Tag key={i} style={{ fontSize: '14px', textTransform: 'uppercase' }} color="orange">{theLoai.TenTheLoai}</Tag>)
+                                                                                })}
+                                                                            </div>
+                                                                            <h1>{phim.TenPhim}</h1>
+                                                                            <p>{phim.MoTa}</p>
+                                                                            <a href="#" className="d-block mb-4">
+                                                                                FULL SYNOPSIS
                                                                          <i className="fa fa-angle-right" />
-                                                                        </a>
-                                                                        <div className="showtime__list d-flex align-items-center">
-                                                                            <i className="fa fa-clock-o  mr-2" />
-                                                                            <span className="mr-2" style={{ width: '120px' }}> VIEWING TIMES</span>
-                                                                            {
-                                                                                phim.ListNgayChieuGioChieu.map((tgc, tgcIndex) => {
-                                                                                    // console.log('tgc', tgc);
-                                                                                    let thoiGianChieu = moment(new Date(tgc.ThoiGianChieu)).format("DD.MM.YYYY");
-                                                                                    let thoiGianView = new Date(tgc.ThoiGianChieu);
-                                                                                    var now = moment(new Date()).format("DD.MM.YYYY"); //todays date
-                                                                                    // console.log('now', now, "thoiGianChieu", thoiGianChieu);
-                                                                                    var startDate = moment(thoiGianChieu, "DD.MM.YYYY");
-                                                                                    var endDate = moment(now, "DD.MM.YYYY");
-                                                                                    var duration = endDate.diff(startDate, 'days');
-                                                                                    // Lấy thời gian hiện tại
-                                                                                    var parseTime = timeString => moment(timeString, 'HH:mm')
-                                                                                    let timeCurrent = moment(new Date()).format("HH:MM");
-                                                                                    let timeLC =  moment(new Date(tgc.ThoiGianChieu)).format("HH:MM");
-                                                                                    // var days = (duration);
-                                                                                    // console.log("days", parseTime(timeLC).isAfter(parseTime(timeCurrent)))
-                                                                                    // days.toFixed(0)
-                                                                                    if (duration === 0) {
-                                                                                        return (
-                                                                                            <div key={tgcIndex}>
-                                                                                                <button key={tgcIndex} className="btn m-1" disabled={parseTime(timeLC).isBefore(parseTime(timeCurrent))} onClick={() => this.handleBookingPage(tgc.MaLichChieu)
-                                                                                                }>{thoiGianView.toLocaleTimeString()}</button>
-                                                                                            </div>
-                                                                                        )
-                                                                                    }
+                                                                            </a>
+                                                                            <div className="showtime__list d-flex align-items-center">
+                                                                                <i className="fa fa-clock-o  mr-2" />
+                                                                                <span className="mr-2" style={{ width: '120px' }}> VIEWING TIMES</span>
+                                                                                {
+                                                                                    phim.ListNgayChieuGioChieu.map((tgc, tgcIndex) => {
+                                                                                        // console.log('tgc', tgc);
+                                                                                        let thoiGianChieu = moment(new Date(tgc.ThoiGianChieu)).format("DD.MM.YYYY");
+                                                                                        let thoiGianView = new Date(tgc.ThoiGianChieu);
+                                                                                        var now = moment(new Date()).format("DD.MM.YYYY"); //todays date
+                                                                                        // console.log('now', now, "thoiGianChieu", thoiGianChieu);
+                                                                                        var startDate = moment(thoiGianChieu, "DD.MM.YYYY");
+                                                                                        var endDate = moment(now, "DD.MM.YYYY");
+                                                                                        var duration = endDate.diff(startDate, 'days');
+                                                                                        // Lấy thời gian hiện tại
+                                                                                        var parseTime = timeString => moment(timeString, 'HH:mm')
+                                                                                        let timeCurrent = moment(new Date()).format("HH:mm");
+                                                                                        let timeLC = moment(new Date(tgc.ThoiGianChieu)).format("HH:mm");
+                                                                                        // var days = (duration);
+                                                                                        // console.log("days", parseTime(timeLC).isAfter(parseTime(timeCurrent)))
+                                                                                        // days.toFixed(0)
+                                                                                        if (duration === 0) {
+                                                                                            console.log(phim.MaPhim, parseTime(timeLC).isBefore(parseTime(timeCurrent)));                                                                                            
+                                                                                            return (
+                                                                                                <div key={tgcIndex}>
+                                                                                                    <button key={tgcIndex} className="btn m-1" disabled={parseTime(timeLC).isBefore(parseTime(timeCurrent))} onClick={() => this.handleBookingPage(tgc.MaLichChieu)
+                                                                                                    }>{thoiGianView.toLocaleTimeString()}</button>
+                                                                                                </div>
+                                                                                            )
+                                                                                        }
 
-                                                                                })
-                                                                            }
+                                                                                    })
+                                                                                }
 
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        )
-                                                    }
-                                                })
+                                                            )
+                                                        }
+                                                    })
 
-                                            }
-                                        })
+                                                }
+                                            })
 
-                                    })
-                                    /* {this.renderLichChieuHTR(r.MaHeThongRap)} */}
+                                        })}
+                                    </div>
                                 </TabPane>
                             )
                         })}

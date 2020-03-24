@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { getMovieListAction, comingMovieAction } from '../../redux/actions/MovieManageAction';
 import moment from 'moment';
 import Slider from "react-slick";
-import { thisExpression } from '@babel/types';
+import { Tag } from 'antd'
 
 class ComingMovies extends Component {
     constructor(props) {
@@ -51,8 +51,8 @@ class ComingMovies extends Component {
                             </div>
                             <div className="row">
                                 <div className="col-6 d-flex align-items-center">
-                                    <div className="coming__detail text-white">
-                                        <span>COMEDY, CRIME</span>
+                                    <div className="coming__detail text-white">                                        
+                                        <div  className='d-flex mb-4'><Tag style={{fontSize: 16}} color="orange">COMEDY</Tag><Tag style={{fontSize: 16}} color="orange">CRIME</Tag></div >
                                         <h1 style={{ color: "white" }}>{this.state.movie.TenPhim}</h1>
                                         <p>
                                             {/* <i className="fa fa-star" />

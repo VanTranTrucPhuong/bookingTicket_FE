@@ -15,11 +15,12 @@ import * as signalR from '@aspnet/signalr';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
-export const connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:44350/DatVeHub").configureLogging(signalR.LogLevel.Information).build();
+export const connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:44350/DatVeHub" ).configureLogging(signalR.LogLevel.Information).build();
 
 
 connection.start().then(function () {
   console.log("connected");
+  connection.invoke("loadListSeat");
 }).catch(function (err) {
   return console.error(err.toString());
 });
